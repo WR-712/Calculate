@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <QButtonGroup>
 #include <QMainWindow>
@@ -29,9 +29,6 @@ public:
     QString cal_deal;
     QString cal_res;
 
-
-    int cal_state;
-
     QStringList stringlist;
 
 public:
@@ -51,6 +48,7 @@ public slots:
     void data_recv();
     void data_recv_deal();
     void resu_print();
+    void data_input_print();
 private slots:
     void on_qingchu_clicked();
 

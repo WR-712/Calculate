@@ -1,6 +1,9 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "QDebug"
+/***********简易计算器+进制转换器**************/
+/************mimo431************************/
+/************2020-0921-1048****************/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -51,13 +54,11 @@ void MainWindow::system_init(){
     connect(ui->jian,&QPushButton::clicked,this,&MainWindow::data_recv);
     connect(ui->chengfa,&QPushButton::clicked,this,&MainWindow::data_recv);
     connect(ui->shang,&QPushButton::clicked,this,&MainWindow::data_recv);
-
     connect(ui->pingfang,&QPushButton::clicked,this,&MainWindow::data_recv);
-
 
     connect(ui->equal,&QPushButton::clicked,this,&MainWindow::data_recv);
 
-    cal_state=1;
+
 }
 void MainWindow::code_change(){
     QString ss=ui->lineEdit_input->text();
@@ -111,41 +112,44 @@ void MainWindow::on_btn_clear_clicked()
     ui->edit_show->clear();
 }
 
+void MainWindow::data_input_print()
+{
+    //ui->edit_show->insertPlainText("\n");
+    ui->edit_show->insertPlainText(cal_recv);
+    //ui->edit_show->insertPlainText("\n");
+
+}
 //数值接收chuli
 void MainWindow::data_recv(){
-
+    //没必要，后续可以改槽函数，直接传值，后续修改。。。。。
     QPushButton *btn=dynamic_cast<QPushButton*>(sender());
     cal_recv=btn->text();
-   // qDebug()<<"recv_: "<<cal_recv<<"state: "<<cal_state;
-    int a=QString::localeAwareCompare(cal_recv,"=");
-    if(a==0){
-       // qDebug()<<"come to deal......";
+    if(cal_recv=="=")
+    {
         data_recv_deal();
         return;
     }
-    a=QString::localeAwareCompare(cal_recv,"0");
-    if(a==0){
-       // qDebug()<<"this is number 0";
+    //如果是运算符，赋予，直接返回
+    if(cal_recv=="+"||cal_recv=="-"||cal_recv=="*"||cal_recv=="/"||cal_recv=="x²")
+     {
+        cal_deal=cal_recv;
+        data_input_print();
         return;
-    }
-    int dat=cal_recv.toInt();
-    //qDebug()<<dat;
-    if(dat>0){
-        if(cal_state==1){
-            cal_x.append(cal_recv);
-        }else {
-            cal_y.append(cal_recv);
-        }
-        ui->edit_show->insertPlainText(cal_recv);
-    }else {
-        cal_deal.append(cal_recv);
-       // qDebug()<<cal_deal;
-        cal_state=2;
-        ui->edit_show->insertPlainText("\n");
-        ui->edit_show->insertPlainText(cal_recv);
-        ui->edit_show->insertPlainText("\n");
-    }
+     }
+    //计算器保留上次计算结果，因此输入接收要注意
 
+     if(cal_deal=="")
+     {
+        cal_x.append(cal_recv);
+        qDebug()<<cal_x;
+     }
+     else {
+         cal_y.append(cal_recv);
+         //ui->edit_show->insertPlainText(cal_recv);
+         qDebug()<<cal_y;
+     }
+
+     data_input_print();
 }
 void MainWindow::data_recv_guolu(){
 
@@ -156,6 +160,8 @@ void MainWindow::data_recv_deal(){
     qDebug()<<cal_x;
     qDebug()<<cal_deal;
     qDebug()<<cal_y;
+    if(cal_x=="")
+        cal_x=cal_res;
     double x=cal_x.toDouble();
     double y=cal_y.toDouble();
     char *p=cal_deal.toLocal8Bit().data();
@@ -180,6 +186,7 @@ void MainWindow::data_recv_deal(){
     }
     qDebug()<<cal_res;
     resu_print();
+
 }
 //結果輸出
 void MainWindow::resu_print(){
@@ -189,17 +196,15 @@ void MainWindow::resu_print(){
     ui->edit_show->insertPlainText("----------------\n");
     ui->edit_show->insertPlainText(cal_res+"\n");
     ui->edit_show->insertPlainText("----------------\n");
-    cal_x=cal_res;
-    cal_deal.clear();
-    cal_y.clear();
-    cal_state=1;
+    //cal_x=cal_res;
+   on_qingchu_clicked();
+
 
 }
-
+//CE，清除内存
 void MainWindow::on_qingchu_clicked()
 {
     cal_deal.clear();
     cal_x.clear();
     cal_y.clear();
-    cal_state=1;
 }
